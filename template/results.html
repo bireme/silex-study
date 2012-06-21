@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Results | {{ parent() }}{% endblock %}
+
+{% block container %}
+    
+    {% include "searchbox.html" %}
+
+    <h1>Results</h1>
+    <h2>Page {{ page }} | Total {{ total }}</h2>
+
+    <ul>
+        {% for doc in docs %}
+            <li>{{ doc.ti.0 }}</li>
+        {% endfor %}
+    </ul>
+
+    {% include "pagination.html" %}
+{% endblock %}
