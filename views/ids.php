@@ -28,8 +28,7 @@ $start = $service['diaServerResponse'][0]['response']['start'];
 
 // paginação
 $pages = $total / 20;
-if($pages > 1) $pagination = range(1, $total / 20);
-else $pagination = array(1);
+$pagination = ($pages > 1) ? $pagination = range(1, $total / 20) : $pagination = array(1);
 
 // criando url para ser apendada na paginação
 $url = "?";
