@@ -2,18 +2,13 @@
 
 {% block title %}Results | {{ parent() }}{% endblock %}
 
-{% block container %}
-    
-    {% include "searchbox.html" %}
+{% block content %}
 
-    <h1>Results</h1>
-    <h2>Page {{ page }} | Total {{ total }}</h2>
+    <div class="results">
+        <div class="resultServices"></div>
+        <div class="resultSet">
+            {% include "result-doc.html" %}
+        </div>
+    </div>
 
-    <ul>
-        {% for doc in docs %}
-            <li>{{ doc.ti.0 }}</li>
-        {% endfor %}
-    </ul>
-
-    {% include "pagination.html" %}
 {% endblock %}
