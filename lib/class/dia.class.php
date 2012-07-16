@@ -86,7 +86,7 @@ class Dia
         $timeout = 10;
         $contentLength = strlen($query);
 
-        if (isset($debug)){
+        if (isset($_REQUEST['debug'])){
             print "<b>dia-server request:</b> " . $url . "<br/>";   
         }
         // Generate the request header 

@@ -1,38 +1,39 @@
+<script>
+    $(function(){
+        $("#searchForm").submit(function(){
+            var msg = "Entre uma ou mais palavras";
+            var q = $("#searchForm input[name=q]");
+            if(q.val() == msg) {
+                q.val("");
+            }
+
+            $(this).submit();
+        });
+    });
+</script>
+
 <div class="search">
-    <form name="searchForm" action="" method="GET">
+    <form name="searchForm" id="searchForm" action="" method="GET">
         
         <div class="searchForm">
-                <input type="hidden" name="lang" value="pt">
-                <input type="hidden" name="col" value="main">
-                <input type="hidden" name="site" value="bvsms">
-                <input type="hidden" name="count" value="10">
-                <input type="hidden" name="filter" value="">
-                <input type="hidden" name="filterLabel" value="">
-                <input type="hidden" name="qt" value="standard">
-                <input type="hidden" name="fmt" value="">
-                <input type="hidden" name="sort" value="">
-
-                <!-- fields used by javascript functions -->
-                <input type="hidden" name="pageFrom" value="0">
-                <input type="hidden" name="from" value="">
-                <input type="hidden" name="addfilter" value="">
-                <input type="hidden" name="backfilter" value="">
-                <input type="hidden" name="printMode" value="">
-                <input type="hidden" name="output" value="">
+                <input type="hidden" name="lang" value="{{ lang }}">
+                <input type="hidden" name="col" value="{{ col }}">
+                <input type="hidden" name="site" value="{{ site }}">
                 <input type="hidden" name="fb" value="">
 
+                <input type="hidden" name="open_cluster" value="">
 
-                <!--span>Entre uma ou mais palavras</span-->
+                {% if params.filter is defined %}
+                    {% for name, item in params.filter %}
+                        <input type="hidden" name="filter[{{ name }}]" value="{{ item }}">
+                    {% endfor %}
+                {% endif %}
 
                 <label for="textEntry1" class="hide">Busca</label>
 
-                <input type="text" name="q" value="Entre uma ou mais palavras" class="inputText defaultValue" onkeydown="if(event.keyCode==13) newSearch();" onblur="clearDefault('textEntry1', 'inputText defaultValue'); this.value= (this.value=='')? 'Entre uma ou mais palavras' : this.value" onfocus="clearDefault('textEntry1', 'inputText'); this.value= (this.value=='Entre uma ou mais palavras')? '' : this.value" id="textEntry1">
+                <input type="text" name="q" value="{% if params.q is defined %}{{ params.q }}{% else %}Entre uma ou mais palavras{% endif %}" class="inputText defaultValue" onkeydown="if(event.keyCode==13) newSearch();" onblur="clearDefault('textEntry1', 'inputText defaultValue'); this.value= (this.value=='')? 'Entre uma ou mais palavras' : this.value" onfocus="clearDefault('textEntry1', 'inputText'); this.value= (this.value=='Entre uma ou mais palavras')? '' : this.value" id="textEntry1">
 
-                <input type="button" name="go" value="pesquisar" class="submit" onclick="javascript:newSearch()" onkeypress="javascript:newSearch()">
-        </div>
-
-        <div id="bookmark_button">
-            <!--img src="./static/image/common/star_selected.gif" onclick="showBookmarks()";/-->
+                <input type="submit" value="pesquisar" class="submit">
         </div>
     </form>
 </div>

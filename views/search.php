@@ -5,6 +5,7 @@ require_once 'lib/class/dia.class.php';
 use Symfony\Component\HttpFoundation\Request;
 
 $app->match('/', function (Request $request) use ($app, $DEFAULT_PARAMS, $config) {
+
     
     $params = array_merge(
         $app['request']->request->all(),
@@ -19,6 +20,11 @@ $app->match('/', function (Request $request) use ($app, $DEFAULT_PARAMS, $config
     $col = $DEFAULT_PARAMS['defaultCollection'];
     if(isset($params['col']) and $params['col'] != "") {
         $col = $params['col'];
+    }
+
+    $fb = "";
+    if(isset($params['fb']) and $params['fb'] != "") {
+        $fb = $params['fb'];
     }
 
     $count = $config->documents_per_page;
@@ -41,11 +47,12 @@ $app->match('/', function (Request $request) use ($app, $DEFAULT_PARAMS, $config
         $q = $params['q'];
     }
     
+    //get sort field to apply
     if(isset($params['sort']) and $params['sort'] != "") {
-        //get sort field to apply
         $sort = getSortValue($col, $params['sort']);     
+    
+    //get default sort
     } else {
-        //get default sort
         $sort = getDefaultSort($col, $q);
     }
 
@@ -59,22 +66,50 @@ $app->match('/', function (Request $request) use ($app, $DEFAULT_PARAMS, $config
         $from = $params['from'];
     }
 
-    $filter_search = array();
+    $filter = array();
+    if(isset($params['filter']) and $params['filter'] != "Array") {
+        $filter = $params['filter'];
+    }
 
+    foreach($filter as $key => $value) {
+        if($value == "Array" or $value == "Array#" or $value == "") {
+            unset($filter[$key]);
+        }
+
+        $filter[$key] = str_replace("#", "", $value);
+    }
+
+    $filters = array();
+    foreach($filter as $item) {
+        $item = explode(":", $item);
+        $filters[$item[0]][] = str_replace('"', '', $item[1]);
+    }
+
+    $filter_search = $filter;
+
+    $debug = true;
+    
     $dia = new Dia($site, $col, $count, $output, $lang);
+    $dia->setParam('fb', $fb);
+
     $dia_response = $dia->search($q, $index, $filter_search, $from);
     $response = json_decode($dia_response, true);
 
-    $docs = $response['diaServerResponse'][0]['response']['docs'];
-
     $output_array = array();
-    $output_array['docs'] = $docs;
-
-    // print_r($docs);
+    $output_array['filters'] = $filters;
+    $output_array['lang'] = $lang;
+    $output_array['col'] = $col;
+    $output_array['site'] = $site;
+    $output_array['params'] = $params;
+    $output_array['total'] = $response['diaServerResponse'][0]['response']['numFound'];
+    $output_array['docs'] = $response['diaServerResponse'][0]['response']['docs'];
+    $output_array['clusters'] = $response['diaServerResponse'][0]['facet_counts']['facet_fields'];
+    
     
     // output
     switch($output) {
-        case "xml": case "sol":
+        case "xml": 
+        case "sol":
             header("Content-type: text/xml");
             print $dia_response;
             break;
